@@ -48,11 +48,12 @@ database_name = ''
 table_name = ''
 field_name = ''
 field_value = ''
+column_name = ''
 create_database = "CREATE DATABASE {0}"
 use_database = "USE {0}"
 create_table = "CREATE TABLE {0}"
 show_tables = "SHOW TABLES"
-select_row_from_table = "SELECT * FROM {0} WHERE {1}='{2}'"
+select_row_from_table = "SELECT {0} FROM {1} WHERE {2}='{3}'"
 
 
 # method for displaying popups
@@ -120,7 +121,7 @@ def validate_database():        # method for validating whether the database is 
 def sql_query(exec_cmd, pwd):
     global user_exist_flag, pwd_correct_flag
     db, cursor = validate_database()
-    print exec_cmd, pwd
+    # print exec_cmd, pwd
     if valid_database_flag:
         try:
             assert isinstance(exec_cmd, object)
@@ -131,7 +132,7 @@ def sql_query(exec_cmd, pwd):
             if str(rows) != '0':
                 user_exist_flag = True
                 data = cursor.fetchone()
-                if pwd == data[2]:
+                if pwd == data[0]:
                     pwd_correct_flag = True
                 else:
                     popup_widget(invalid_pwd_popup)
@@ -154,20 +155,21 @@ class RootWidget(BoxLayout):
             pass
 
     def authenticate(self, *args):          # query to sql server for login credentials authentication
-        global table_name, field_name, field_value
+        global table_name, field_name, field_value, column_name
         table_name = 'user_credentials'
+	column_name = 'password'
         # label = self.ids['label1']
         # label.color = [random.random() for i in xrange(3)] + [1]
         if valid_pwd_flag and valid_email_flag:
             field_name = 'email'
             field_value = args[0]
-            flag = sql_query(select_row_from_table.format(table_name, field_name, field_value), str(args[1]))   # check if email-id exist
+            flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value), str(args[1]))   # check if email-id exist
             if flag:
                 popup_widget('login successful')
         elif valid_username_flag and valid_pwd_flag:
             field_name = 'username'
             field_value = args[0]
-            flag = sql_query(select_row_from_table.format(table_name, field_name, field_value),
+            flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value),
                          str(args[1]))  # check if email-id exist
             if flag:
                 popup_widget('login successful')        # here it will be redirected to the main application ui
