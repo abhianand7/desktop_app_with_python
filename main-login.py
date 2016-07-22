@@ -8,7 +8,6 @@ kivy.require("1.9.1")
 # import random
 import cProfile     # for profiling the python code
 import re
-import pexpect      # in-case you need to run native linux commands
 import sys
 
 # additional imports
@@ -20,9 +19,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 import popup
-
-# custom imports
-#import home
+import sql_connect
+import log
 
 # determine the platform, whether it is linux, windows or mac
 platform  = sys.platform
@@ -35,7 +33,6 @@ username_pattern = re.compile('[a-z0-9\._]{4,20}')
 # flags used in this program
 valid_email_flag = False
 valid_pwd_flag = False
-valid_database_flag = False
 valid_username_flag = False
 user_exist_flag = False
 pwd_correct_flag = False
@@ -59,70 +56,16 @@ show_tables = "SHOW TABLES"
 select_row_from_table = "SELECT {0} FROM {1} WHERE {2}='{3}'"
 
 
-# method for running native linux commands
-def run_cmd(cmd):                           # under development
-    pexpect.run(cmd)
-    child = pexpect.spawn(cmd)
-    child.expect('')
-    child.sendline('')
-    return None
-
-
-# method for logging/debugging errors
-# finally logging module of python will be used
-def logs(errors):                           # under development
-    saveout = sys.stdout
-    try:
-        fsock = open('logs.txt', 'a')
-    except IOError:
-        fsock = open('logs.txt', 'w')
-    sys.stdout = fsock
-    print errors
-    sys.stdout = saveout
-    fsock.close()
-
-
-# sql connection establish
-def sql_connect():
-    # mysql database connection
-    user = 'root'
-    password = 'Abhinav@7'
-    database = 'login_authentication'
-    connect_to = 'localhost'        # this will change in case of online authentication
-
-    # this connects to the database and further queries can be made inside the sql database
-    db = mysql.connect(connect_to, user, password, database)
-    return db
-
-
-def validate_database():        # method for validating whether the database is configured properly
-    # define a cursor to the database
-    global valid_database_flag      # always declare a variable 'global' when using from outer scope
-    db = sql_connect()
-    cursor = db.cursor()
-    # sql query
-    try:
-        rows = str(cursor.execute(show_tables))
-    except:     # need to specify the particular exception
-        logs('not connected to the database')
-
-    if rows != '0':
-        valid_database_flag = True
-    else:
-        logs('Database Empty')
-    return db, cursor
-
-
 def sql_query(exec_cmd, pwd):
     global user_exist_flag, pwd_correct_flag
-    db, cursor = validate_database()
-    # print exec_cmd, pwd
-    if valid_database_flag:
+    db, cursor, flag = sql_connect.validate_database()
+    print flag
+    if flag:
         try:
             assert isinstance(exec_cmd, object)
             rows = cursor.execute(exec_cmd)
         except:
-            logs('Invalid SQL command')
+            log.logs('Invalid SQL command')
         else:
             if str(rows) != '0':
                 user_exist_flag = True
@@ -152,7 +95,7 @@ class RootWidget(BoxLayout):
     def authenticate(self, *args):          # query to sql server for login credentials authentication
         global table_name, field_name, field_value, column_name
         table_name = 'user_credentials'
-	column_name = 'password'
+        column_name = 'password'
         # label = self.ids['label1']
         # label.color = [random.random() for i in xrange(3)] + [1]
         if valid_pwd_flag and valid_email_flag:
