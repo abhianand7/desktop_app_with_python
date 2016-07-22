@@ -55,10 +55,12 @@
                 font_size: 15
                 height: 30
                 width: 150
+                multiline: False
                 size_hint_y: None
                 size_hint_x: None
                 pos_hint: {'center_y': 0.5}
                 on_text: root.validate_text_input(text_input_email.text, 'e')
+                on_text_validate: root.authenticate(text_input_email.text, text_input_pwd.text)
             Label:
                 id: email_label
                 font_size: 12
@@ -92,11 +94,13 @@
                 font_size: 15
                 height: 30
                 width: 150
+                multiline: False
                 size_hint_y: None
                 size_hint_x: None
                 pos_hint: {'center_y': 0.5}
                 password: True
                 on_text: root.validate_text_input(text_input_pwd.text, 'p')
+                on_text_validate: root.authenticate(text_input_email.text, text_input_pwd.text)
             Label:
                 id: pwd_label
                 font_size: 12

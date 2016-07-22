@@ -21,6 +21,9 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 
+# custom imports
+#import home
+
 # determine the platform, whether it is linux, windows or mac
 platform  = sys.platform
 
