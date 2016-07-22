@@ -19,7 +19,8 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.uix.popup import Popup
+# from kivy.uix.popup import Popup
+import popup
 
 # custom imports
 #import home
@@ -59,15 +60,6 @@ show_tables = "SHOW TABLES"
 select_row_from_table = "SELECT {0} FROM {1} WHERE {2}='{3}'"
 
 
-# method for displaying popups
-def popup_widget(var):
-    popup = Popup(title='Login',
-                  content=Label(text=var),
-                  size_hint=(None, None),
-                  size=(300, 300))
-    popup.open()
-
-
 # method for running native linux commands
 def run_cmd(cmd):                           # under development
     pexpect.run(cmd)
@@ -78,6 +70,7 @@ def run_cmd(cmd):                           # under development
 
 
 # method for logging/debugging errors
+# finally logging module of python will be used
 def logs(errors):                           # under development
     saveout = sys.stdout
     try:
@@ -138,14 +131,14 @@ def sql_query(exec_cmd, pwd):
                 if pwd == data[0]:
                     pwd_correct_flag = True
                 else:
-                    popup_widget(invalid_pwd_popup)
+                    popup.popup_widget(invalid_pwd_popup)
                     pwd_correct_flag = False
             else:
-                popup_widget(invalid_email_popup)
+                popup.popup_widget(invalid_email_popup)
                 user_exist_flag = False         # if this is not set false here then it will allow to login with
                 # invalid email id after first login was successful
     else:
-        popup_widget(database_empty_popup)
+        popup.popup_widget(database_empty_popup)
     db.close()
     return pwd_correct_flag and user_exist_flag
 
@@ -168,16 +161,16 @@ class RootWidget(BoxLayout):
             field_value = args[0]
             flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value), str(args[1]))   # check if email-id exist
             if flag:
-                popup_widget('login successful')
+                popup.popup_widget('login successful')
         elif valid_username_flag and valid_pwd_flag:
             field_name = 'username'
             field_value = args[0]
             flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value),
                          str(args[1]))  # check if email-id exist
             if flag:
-                popup_widget('login successful')        # here it will be redirected to the main application ui
+                popup.popup_widget('login successful')        # here it will be redirected to the main application ui
         else:
-            popup_widget(incorrect_input_popup)
+            popup.popup_widget(incorrect_input_popup)
 
     def validate_text_input(self, *args):   # method for validating the text input provided in username and password
         global valid_email_flag, valid_pwd_flag, valid_username_flag
