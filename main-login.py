@@ -10,8 +10,6 @@ import cProfile     # for profiling the python code
 import re
 import sys
 
-# additional imports
-import MySQLdb as mysql
 
 # imports from kivy package
 from kivy.app import App
