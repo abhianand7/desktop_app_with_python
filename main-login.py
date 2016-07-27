@@ -9,17 +9,19 @@ kivy.require("1.9.1")
 import cProfile     # for profiling the python code
 import re
 import sys
-import json_parser
 
 # imports from kivy package
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+
+# custom imports
 import popup
 import sql_connect
 import log
 import sql_query
+import json_parser
 
 # determine the platform, whether it is linux, windows or mac
 platform = sys.platform
