@@ -82,38 +82,6 @@ def process_login(cmd, column_name, field_name, field_value, pwd):
     return pwd_correct_flag and user_exist_flag
 
 
-
-
-
-# def sql_query(exec_cmd, pwd):
-#     global user_exist_flag, pwd_correct_flag
-#     db, cursor, flag = sql_connect.validate_database()
-#     print flag
-#     if flag:
-#         try:
-#             assert isinstance(exec_cmd, object)
-#             rows = cursor.execute(exec_cmd)
-#         except:
-#             log.logs('Invalid SQL command')
-#         else:
-#             if str(rows) != '0':
-#                 user_exist_flag = True
-#                 data = cursor.fetchone()
-#                 if pwd == data[0]:
-#                     pwd_correct_flag = True
-#                 else:
-#                     popup.popup_widget(invalid_pwd_popup)
-#                     pwd_correct_flag = False
-#             else:
-#                 popup.popup_widget(invalid_email_popup)
-#                 user_exist_flag = False         # if this is not set false here then it will allow to login with
-#                 # invalid email id after first login was successful
-#     else:
-#         popup.popup_widget(database_empty_popup)
-#     db.close()
-#     return pwd_correct_flag and user_exist_flag
-
-
 class RootWidget(BoxLayout):
     def __init__(self, **kwargs):
         super(RootWidget, self).__init__(**kwargs)
@@ -131,7 +99,6 @@ class RootWidget(BoxLayout):
             field_name = 'email'
             field_value = args[0]
             flag = process_login(cmd, column_name, field_name, field_value, args[1])
-            # flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value), str(args[1]))   # check if email-id exist
             if flag:
                 popup.popup_widget('login successful')
         elif valid_username_flag and valid_pwd_flag:
