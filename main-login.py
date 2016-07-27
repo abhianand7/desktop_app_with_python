@@ -21,7 +21,7 @@ import sql_connect
 import log
 
 # determine the platform, whether it is linux, windows or mac
-platform  = sys.platform
+platform = sys.platform
 
 # regex patterns
 email_pattern = re.compile('[a-z0-9_\.]+@{1}[a-z]+\.{1}[a-z]+$')
