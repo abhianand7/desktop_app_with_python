@@ -3,7 +3,6 @@ import log
 import popup
 import run
 
-
 # some sql commands
 database_name = ''
 table_name = ''
@@ -18,16 +17,10 @@ select_row_from_table = "SELECT {0} FROM {1} WHERE {2}='{3}'"
 
 
 # sql connection establish
-def sql_connect():
-    # mysql database connection
-    user = 'root'
-    password = 'Abhinav@7'
-    database = 'login_authentication'
-    connect_to = 'localhost'        # this will change in case of online authentication
-
+def sql_connect(login):
     # this connects to the database and further queries can be made inside the sql database
     try:
-        db = mysql.connect(connect_to, user, password, database)
+        db = mysql.connect(login[0], login[1], login[2], login[3])
     except mysql.OperationalError:
         # here use more greedy technique for connecting to mysql server in-case the previous step fails
         log.logs('Invalid Credentials for database')
@@ -36,10 +29,10 @@ def sql_connect():
     return db
 
 
-def validate_database():        # method for validating whether the database is configured properly
+def validate_database(login):        # method for validating whether the database is configured properly
     # define a cursor to the database
-    global valid_database_flag      # always declare a variable 'global' when using from outer scope
-    db = sql_connect()
+    valid_database_flag = False
+    db = sql_connect(login)
     cursor = db.cursor()
     # sql query
     try:

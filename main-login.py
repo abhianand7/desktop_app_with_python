@@ -9,7 +9,7 @@ kivy.require("1.9.1")
 import cProfile     # for profiling the python code
 import re
 import sys
-
+import json_parser
 
 # imports from kivy package
 from kivy.app import App
@@ -19,9 +19,13 @@ from kivy.uix.button import Button
 import popup
 import sql_connect
 import log
+import sql_query
 
 # determine the platform, whether it is linux, windows or mac
 platform = sys.platform
+
+#json Filename
+filename = 'sql_server.json'
 
 # regex patterns
 email_pattern = re.compile('[a-z0-9_\.]+@{1}[a-z]+\.{1}[a-z]+$')
@@ -32,8 +36,8 @@ username_pattern = re.compile('[a-z0-9\._]{4,20}')
 valid_email_flag = False
 valid_pwd_flag = False
 valid_username_flag = False
-user_exist_flag = False
-pwd_correct_flag = False
+# user_exist_flag = False
+# pwd_correct_flag = False
 
 # popup widget for prompt when user enters invalid email and password
 incorrect_input_popup = 'invalid email or password\n please try again'
@@ -54,33 +58,60 @@ show_tables = "SHOW TABLES"
 select_row_from_table = "SELECT {0} FROM {1} WHERE {2}='{3}'"
 
 
-def sql_query(exec_cmd, pwd):
-    global user_exist_flag, pwd_correct_flag
-    db, cursor, flag = sql_connect.validate_database()
-    print flag
-    if flag:
-        try:
-            assert isinstance(exec_cmd, object)
-            rows = cursor.execute(exec_cmd)
-        except:
-            log.logs('Invalid SQL command')
+def process_login(cmd, column_name, field_name, field_value, pwd):
+    user_exist_flag = False
+    pwd_correct_flag = False
+    db, cursor, valid_database_flag = sql_connect.validate_database(
+        json_parser.parse_json(filename, 'server', 'user', 'password', 'database', 'login_db')
+    )
+    cursor, rows = sql_query.query_sql(cmd, column_name, json_parser.parse_json(filename, 'table', 'login_db'),
+                                       field_name, field_value, db, cursor, valid_database_flag, 4)
+    if str(rows) != '0':
+        user_exist_flag = True
+        data = cursor.fetchone()
+        if pwd == data[0]:
+            pwd_correct_flag = True
         else:
-            if str(rows) != '0':
-                user_exist_flag = True
-                data = cursor.fetchone()
-                if pwd == data[0]:
-                    pwd_correct_flag = True
-                else:
-                    popup.popup_widget(invalid_pwd_popup)
-                    pwd_correct_flag = False
-            else:
-                popup.popup_widget(invalid_email_popup)
-                user_exist_flag = False         # if this is not set false here then it will allow to login with
-                # invalid email id after first login was successful
+            popup.popup_widget(invalid_pwd_popup)
+            pwd_correct_flag = False
     else:
-        popup.popup_widget(database_empty_popup)
+        popup.popup_widget(invalid_email_popup)
+        user_exist_flag = False  # if this is not set false here then it will allow to login with
+        # invalid email id after first login was successful
     db.close()
     return pwd_correct_flag and user_exist_flag
+
+
+
+
+
+# def sql_query(exec_cmd, pwd):
+#     global user_exist_flag, pwd_correct_flag
+#     db, cursor, flag = sql_connect.validate_database()
+#     print flag
+#     if flag:
+#         try:
+#             assert isinstance(exec_cmd, object)
+#             rows = cursor.execute(exec_cmd)
+#         except:
+#             log.logs('Invalid SQL command')
+#         else:
+#             if str(rows) != '0':
+#                 user_exist_flag = True
+#                 data = cursor.fetchone()
+#                 if pwd == data[0]:
+#                     pwd_correct_flag = True
+#                 else:
+#                     popup.popup_widget(invalid_pwd_popup)
+#                     pwd_correct_flag = False
+#             else:
+#                 popup.popup_widget(invalid_email_popup)
+#                 user_exist_flag = False         # if this is not set false here then it will allow to login with
+#                 # invalid email id after first login was successful
+#     else:
+#         popup.popup_widget(database_empty_popup)
+#     db.close()
+#     return pwd_correct_flag and user_exist_flag
 
 
 class RootWidget(BoxLayout):
@@ -91,22 +122,24 @@ class RootWidget(BoxLayout):
             pass
 
     def authenticate(self, *args):          # query to sql server for login credentials authentication
-        global table_name, field_name, field_value, column_name
-        table_name = 'user_credentials'
+        global table_name, field_name, field_value, column_name, filename
         column_name = 'password'
         # label = self.ids['label1']
         # label.color = [random.random() for i in xrange(3)] + [1]
+        cmd = select_row_from_table
         if valid_pwd_flag and valid_email_flag:
             field_name = 'email'
             field_value = args[0]
-            flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value), str(args[1]))   # check if email-id exist
+            flag = process_login(cmd, column_name, field_name, field_value, args[1])
+            # flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value), str(args[1]))   # check if email-id exist
             if flag:
                 popup.popup_widget('login successful')
         elif valid_username_flag and valid_pwd_flag:
             field_name = 'username'
             field_value = args[0]
-            flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value),
-                         str(args[1]))  # check if email-id exist
+            flag = process_login(cmd, column_name, field_name, field_value, args[1])
+            # flag = sql_query(select_row_from_table.format(column_name, table_name, field_name, field_value),
+            #              str(args[1]))  # check if email-id exist
             if flag:
                 popup.popup_widget('login successful')        # here it will be redirected to the main application ui
         else:

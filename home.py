@@ -48,6 +48,7 @@ class TabWidget(TabbedPanel):
     def search(self, *args):
         pass
 
+
 class HomeScreenApp(App):
     def build(self):
         return TabWidget()
