@@ -1,6 +1,7 @@
 import sys
 
 
+# this method will be replaced by the logging method of inbuilt python
 def logs(errors):                           # under development
     saveout = sys.stdout
     try:
