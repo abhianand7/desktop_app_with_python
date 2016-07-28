@@ -12,3 +12,4 @@ def popup_widget(var):
                   size_hint=(None, None),
                   size=(300, 300))
     popup.open()
+    return popup

@@ -9,6 +9,7 @@ kivy.require("1.9.1")
 import cProfile     # for profiling the python code
 import re
 import sys
+import time
 
 # imports from kivy package
 from kivy.app import App
@@ -22,6 +23,7 @@ import sql_connect
 import log
 import sql_query
 import json_parser
+import home
 
 # determine the platform, whether it is linux, windows or mac
 platform = sys.platform
@@ -102,7 +104,10 @@ class RootWidget(BoxLayout):
             field_value = args[0]
             flag = process_login(cmd, column_name, field_name, field_value, args[1])
             if flag:
+                start = time.time()
                 popup.popup_widget('login successful')
+                if time.time() - start >= 3:
+                    pass
         elif valid_username_flag and valid_pwd_flag:
             field_name = 'username'
             field_value = args[0]
