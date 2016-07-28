@@ -2,9 +2,7 @@ import kivy
 
 kivy.require('1.9.1')
 
-import popup
 import log
-import sql_connect
 
 # args passing structure
 # args[0] = SELECT {0} FROM {1} WHERE name='{2}'
