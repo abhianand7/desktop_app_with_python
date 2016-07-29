@@ -12,7 +12,7 @@ import datetime
 
 # custom imports
 import popup
-import sql_connect
+import json_parser
 
 # Flags
 valid_date_flag = False

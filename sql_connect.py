@@ -4,16 +4,8 @@ import popup
 import run
 
 # some sql commands
-database_name = ''
-table_name = ''
-field_name = ''
-field_value = ''
-column_name = ''
-create_database = "CREATE DATABASE {0}"
-use_database = "USE {0}"
-create_table = "CREATE TABLE {0}"
+
 show_tables = "SHOW TABLES"
-select_row_from_table = "SELECT {0} FROM {1} WHERE {2}='{3}'"
 
 
 # sql connection establish
@@ -24,7 +16,7 @@ def sql_connect(login):
     except mysql.OperationalError:
         # here use more greedy technique for connecting to mysql server in-case the previous step fails
         log.logs('Invalid Credentials for database')
-        popup.popup_widget('Fatal Error Ocurred\nContact Admin to resolve the issue')
+        popup.popup_widget('Fatal Error Occurred\nContact Admin to resolve the issue')
         exit(0)
     return db
 
@@ -37,8 +29,8 @@ def validate_database(login):        # method for validating whether the databas
     # sql query
     try:
         rows = str(cursor.execute(show_tables))
-    except:     # need to specify the particular exception
-        log.logs('not connected to the database')
+    except mysql.ProgrammingError:     # need to specify the particular exception
+        log.logs('Invalid Command')
 
     if rows != '0':
         valid_database_flag = True

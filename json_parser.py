@@ -1,7 +1,6 @@
 import json
-
 """
-JSON data Structure
+JSON data Structure for sql_server.json
 { "login_db":   this is database identifier and below are the credentials stored for that
 {"id": "login",
 "server": "server_address",

@@ -28,8 +28,10 @@ import home
 # determine the platform, whether it is linux, windows or mac
 platform = sys.platform
 
-#json Filename
-filename = 'sql_server.json'
+# json Filename
+server_credentials = 'sql_server.json'
+sql_commands = 'sql_commands.json'
+
 
 # regex patterns
 email_pattern = re.compile('[a-z0-9_\.]+@{1}[a-z]+\.{1}[a-z]+$')
@@ -49,15 +51,6 @@ database_empty_popup = 'User does not exit'
 invalid_email_popup = 'user does not exist \n register first'
 invalid_pwd_popup = 'Incorrect Password'
 
-# some sql commands
-database_name = ''
-table_name = ''
-field_name = ''
-field_value = ''
-column_name = ''
-create_database = "CREATE DATABASE {0}"
-use_database = "USE {0}"
-create_table = "CREATE TABLE {0}"
 show_tables = "SHOW TABLES"
 select_row_from_table = "SELECT {0} FROM {1} WHERE {2}='{3}'"
 
@@ -66,9 +59,9 @@ def process_login(cmd, column_name, field_name, field_value, pwd):
     user_exist_flag = False
     pwd_correct_flag = False
     db, cursor, valid_database_flag = sql_connect.validate_database(
-        json_parser.parse_json(filename, 'server', 'user', 'password', 'database', 'login_db')
+        json_parser.parse_json(server_credentials, 'server', 'user', 'password', 'database', 'login_db')
     )
-    cursor, rows = sql_query.query_sql(cmd, column_name, json_parser.parse_json(filename, 'table', 'login_db'),
+    cursor, rows = sql_query.query_sql(cmd, column_name, json_parser.parse_json(server_credentials, 'table', 'login_db'),
                                        field_name, field_value, db, cursor, valid_database_flag, 4)
     if str(rows) != '0':
         user_exist_flag = True
@@ -94,7 +87,6 @@ class RootWidget(BoxLayout):
             pass
 
     def authenticate(self, *args):          # query to sql server for login credentials authentication
-        global table_name, field_name, field_value, column_name, filename
         column_name = 'password'
         # label = self.ids['label1']
         # label.color = [random.random() for i in xrange(3)] + [1]
