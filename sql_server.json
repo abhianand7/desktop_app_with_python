@@ -1,5 +1,9 @@
-{ "login_db":
-	{"id": "login","server": "localhost","user":"root", "password": "Abhinav@7", "database": "login_authentication", "table": "user_credentials"},
-"india_db":	{"id":"india_db","server": "localhost", "user": "root", "password": "Abhinav@7", "database": "all_india_db", "table": "location_info"}
+{
+	"server":
+	{"host": "localhost", "user": "root", "password": "Abhinav@7"},
+	"login_db":
+	{"id": "login", "database": "login_authentication", "table": "user_credentials"},
+	"india_db":
+	{"id":"india_db", "database": "all_india_db", "table": "location_info"}
 }
 

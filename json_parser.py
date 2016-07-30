@@ -3,19 +3,17 @@ import json
 JSON data Structure for sql_server.json
 { "login_db":   this is database identifier and below are the credentials stored for that
 {"id": "login",
-"server": "server_address",
-"user":"sql_server username",
-"password": "password for  sql server",
 "database": "database_name",
 "table": "table_name"
 },
 "india_db":
 {"id":"",
-"server": "",
-"user": "",
-"password": "",
 "database": "",
 "table": ""}
+"server":
+{"host": "host_address",
+"user": "username",
+"password": "pwd"
 }
 """
 
@@ -26,11 +24,14 @@ def parse_json(filename, *args):
         data = json.load(fobj)
     arg_len = len(args)
     # print 'arg_len:{0}'.format(arg_len)
-
+    # var is the list that will be returned
     var = []
-    for i in range(0, arg_len-1):
-        var.append(data[args[-1]][args[i]])
-    if len(var) > 1:
-        return var
+    if len(args) > 0:
+        for i in range(0, arg_len-1):
+            var.append(data[args[-1]][args[i]])
+        if len(var) > 1:
+            return var
+        else:
+            return var[0]
     else:
-        return var[0]
+        return data
