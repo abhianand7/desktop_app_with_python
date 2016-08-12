@@ -2,12 +2,16 @@ import kivy
 
 kivy.require('1.9.1')
 
-# Internal Imports
+# Kivy Imports
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.button import Button
+from kivy.uix.checkbox import CheckBox
+
+# internal imports
 import datetime
+import time
 
 
 # custom imports
@@ -40,6 +44,7 @@ def sql_process(*args):
         else:
             return None
 
+
 class TabWidget(TabbedPanel):
     def __init__(self, **kwargs):
         super(TabWidget, self).__init__(**kwargs)
@@ -60,13 +65,22 @@ class TabWidget(TabbedPanel):
         pass
 
     def validate_pincode(self, *args):
+        valid_pincode_flag = False
+        multi_data_found_flag = False
         cmd = json_parser.parse_json(sql_command_file, 'show_records_with_value', 'commands')
         table_name = json_parser.parse_json(sql_server_file, 'table', 'all_india_db')
         data = sql_process(cmd, table_name, 'pincode', args[0])
         if data:
-            pass
+            valid_pincode_flag = True
+            if len(data) > 1:
+                multi_data_found_flag = True
+
         else:
-            popup.popup_widget('Invalid Pincode\nPlease try again')
+            popup_obj = popup.popup_widget('Invalid Pincode\nPlease try again')
+            start = time.time()
+            while time.time() - start < 3:
+                pass
+            popup.popup_dismiss(popup_obj)
 
     def search(self, *args):
         pass
