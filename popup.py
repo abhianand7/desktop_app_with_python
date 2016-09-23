@@ -26,17 +26,6 @@ kv = '''
 '''
 
 
-# checkbox widget
-class CheckboxWidget(GridLayout):
-    Builder.load_string(kv)
-
-    def func(self, *args):
-        checkbox1 = self.ids['checkbox1']
-        checkbox1.text = args[0]
-        checkbox2 = self.ids['checkbox2']
-        checkbox2.text = args[1]
-
-
 # method for displaying popups
 def popup_widget(var):
     popup = Popup(title='Login',
@@ -47,14 +36,16 @@ def popup_widget(var):
     return popup
 
 
+# method for displaying popups with custom widget as content instead of just text
+def custom_popup_widget(widget):
+    popup = Popup(title='Login',
+                  content=widget,
+                  size_hint=(None, None),
+                  size=(300, 300))
+    popup.open()
+    return popup
+
+
 def popup_dismiss(popup):
     popup.dismiss()
     return None
-
-
-def popup_with_checkbox(*args):
-    popup = Popup(title='select',
-                  content=CheckboxWidget(),
-                  size_hint=(None, None),
-                  size=(200, 500))
-    popup.open()

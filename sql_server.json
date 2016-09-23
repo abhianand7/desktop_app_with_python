@@ -4,6 +4,8 @@
 	"login_db":
 	{"id": "login", "database": "login_authentication", "table": "user_credentials"},
 	"india_db":
-	{"id":"india_db", "database": "all_india_db", "table": "location_info"}
+	{"id":"india_db", "database": "all_india_db", "table": "location_info"},
+	"lat_lng_db":
+	{"id": "address_map", "database": "lat_lng_db", "table": "address_to_lat_lng_db"}
 }
 

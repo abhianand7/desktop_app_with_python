@@ -154,3 +154,20 @@
             text:
                 '\n'.join(("Hello world", "-----------",
                 "You are in the third tab."))
+<CheckboxWidget>
+    cols: 2
+    size_hint_x: None
+    size_hint_y: None
+    pos_hint: {'top': 1}
+    CheckBox:
+        width: 100
+
+    Label:
+        id: checkbox1
+        text: 'option 1'
+    CheckBox:
+        width: 100
+
+    Label:
+        id: checkbox2
+        text: 'option 2'

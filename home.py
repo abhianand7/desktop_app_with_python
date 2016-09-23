@@ -8,9 +8,9 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.gridlayout import GridLayout
 
 # internal imports
-import datetime
 import time
 
 
@@ -45,6 +45,10 @@ def sql_process(*args):
             return None
 
 
+class CheckBoxWidget(GridLayout):
+    pass
+
+
 class TabWidget(TabbedPanel):
     def __init__(self, **kwargs):
         super(TabWidget, self).__init__(**kwargs)
@@ -68,10 +72,11 @@ class TabWidget(TabbedPanel):
         valid_pincode_flag = False
         multi_data_found_flag = False
         cmd = json_parser.parse_json(sql_command_file, 'show_records_with_value', 'commands')
-        table_name = json_parser.parse_json(sql_server_file, 'table', 'all_india_db')
+        table_name = json_parser.parse_json(sql_server_file, 'table', 'lat_lng_db')
         data = sql_process(cmd, table_name, 'pincode', args[0])
         if data:
             valid_pincode_flag = True
+
             if len(data) > 1:
                 multi_data_found_flag = True
 

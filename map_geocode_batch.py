@@ -1,13 +1,12 @@
 import geopy
-from geopy import geocoders
+import mapbox
+from mapbox import Geocoder
 # from osgeo import ogr, osr
 import csv
-import time
 
-
-csv_file_with_address = '/home/ubuntu/PycharmProjects/Jasper_App/all_india_data_for_geocode.csv'
-file_with_lat_long = 'lat_long_google.txt'
-
+csv_file_with_address = '/home/ubuntu/PycharmProjects/Jasper_App/all_india_data_for_geocode_without_district.csv'
+file_with_lat_long = 'lat_long.txt'
+mapbox_access_token = 'pk.eyJ1IjoiZXJhYmhpbmF2IiwiYSI6ImNpcnMxZHVxeTBpaDBmbG04ZzAwaWJlemYifQ.QOJ5SoEcM8J0RwXC-cLl1w'
 
 def csv_reader(csv_file):
     csvfile = open(csv_file, 'rb')
@@ -31,22 +30,20 @@ def file_writer(lat_lng_file, data):
 
 
 def geocode(address):
-    g = geocoders.GoogleV3()
+    g = Geocoder(access_token=mapbox_access_token)
     try:
-        place, (lat, lng) = g.geocode(address, timeout=30)
-    except TypeError:
-        string = g.geocode(address)
-        return address, 'Not Found', 'Not Found'
-    except geopy.exc.GeocoderTimedOut:
-        return address, 'TimedOut', 'TimedOut'
-    except geopy.exc.GeocoderQuotaExceeded as e:
-        print "Quota Excedded, Press Enter to close the program"
-        input()
-        repr(e)
+        print address
+        response = g.forward(address, country=['in'])
+        collections = response.json()
+    except:
+        print 'Error Occurred'
+        return "Not Found", 'Not Found'
     else:
-        print '%s: %.5f, %.5f' % (place, lat, lng)
-        return place, lat, lng
-
+        if response.status_code == 200 and len(collections['features']) >= 1:
+            lat, lng = collections['features'][0]['geometry']['coordinates']
+            return lat, lng
+        else:
+            return 'Not Found', 'Not Found'
 '''
 # method for creating a shapefile
 
@@ -93,27 +90,24 @@ def parse_file(filepath, output_shape):
 def map_geocode_addresses(address_file, lat_long_file):
     global count
     temp = count
-    start = time.time()
     for row in get_row_from_address(address_file):
         if temp > 0:
             temp -= 1
         else:
-            place, lat, lng = geocode(','.join(row))
+            lat, lng = geocode(','.join(row))
             # print ' '.join(row)
             address = '"' + ','.join(row) + '"'
-            place = '"' + str(place) + '"'
-            data = ','.join([address, place, str(lat), str(lng)])
+            data = ','.join([address, str(lat), str(lng)])
+            print data
             file_writer(lat_long_file, data)
             count += 1
-            while time.time() - start <= 0.1:
-                pass
-            start = time.time()
-    print 'Success'
 
-try:
-    with open('data_processed.txt', 'r') as fobj:
-        count = int(fobj.readline().strip('\n'))
-    map_geocode_addresses(csv_file_with_address, file_with_lat_long)
-except:
-    with open('data_processed.txt', 'w') as fobj1:
-        fobj1.write(str(count))
+    print 'Success'
+count = 0
+# try:
+#     with open('data_processed.txt', 'r') as fobj:
+#         count = int(fobj.readline().strip('\n'))
+map_geocode_addresses(csv_file_with_address, file_with_lat_long)
+# except:
+#     with open('data_processed.txt', 'w') as fobj1:
+#         fobj1.write(str(count))
